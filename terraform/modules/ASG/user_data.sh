@@ -11,22 +11,15 @@ systemctl start docker
 mkdir -p /usr/local/lib/docker/cli-plugins
 
 wget \
-  https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
-  -O /usr/local/lib/docker/cli-plugins/docker-compose
+https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
+-O /usr/local/lib/docker/cli-plugins/docker-compose
 
 chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
-
-fallocate -l 2G /swapfile
-chmod 600 /swapfile
-mkswap /swapfile
-swapon /swapfile
-
-echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
 
 cd /tmp
 
 wget -O install \
-  https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install
+https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install
 
 chmod +x install
 ./install auto
