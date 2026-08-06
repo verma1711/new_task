@@ -1,0 +1,9 @@
+.terraform/
+*.tfstate
+*.tfstate.*
+terraform/**/terraform.tfvars
+*.tfplan
+**/.env
+**/node_modules
+.DS_Store
+Thumbs.db

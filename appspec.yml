@@ -1,0 +1,27 @@
+version: 0.0
+
+os: linux
+
+files:
+  - source: /
+    destination: /opt/app
+
+permissions:
+  - object: /opt/app/scripts
+    pattern: "**"
+    owner: root
+    group: root
+    mode: 755
+    type:
+      - file
+
+hooks:
+  BeforeInstall:
+    - location: scripts/install_dependencies.sh
+      timeout: 600
+      runas: root
+
+  ApplicationStart:
+    - location: scripts/deploy.sh
+      timeout: 600
+      runas: root

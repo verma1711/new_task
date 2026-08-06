@@ -1,0 +1,12 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo "Validating Dockerfiles"
+      - docker build -t backend-test ./api
+      - docker build -t frontend-test ./frontend
+
+artifacts:
+  files:
+    - "**/*"
