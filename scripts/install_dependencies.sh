@@ -16,6 +16,12 @@ wget \
   https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
   -O /usr/local/lib/docker/cli-plugins/docker-compose
 
+wget \
+  https://github.com/docker/buildx/releases/latest/download/buildx-v0.29.1.linux-amd64 \
+  -O /usr/local/lib/docker/cli-plugins/docker-buildx
+
 chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
+chmod +x /usr/local/lib/docker/cli-plugins/docker-buildx
 
 docker compose version
+docker buildx version
