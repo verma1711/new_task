@@ -1,7 +1,7 @@
 #!/bin/bash
 
-dnf update -y
-dnf install -y docker ruby wget curl
+dnf update -y --allowerasing
+dnf install -y docker ruby wget --allowerasing
 
 systemctl enable docker
 systemctl start docker
