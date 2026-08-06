@@ -1,18 +1,21 @@
 #!/bin/bash
 
+set -e
+
 dnf update -y --allowerasing
 dnf install -y docker ruby wget --allowerasing
 
 systemctl enable docker
 systemctl start docker
 
-cd /home/ec2-user
+cd /tmp
 
-wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install
+wget -O install https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install
 
-chmod +x ./install
+chmod +x install
 ./install auto
 
+systemctl daemon-reload
 systemctl enable codedeploy-agent
 systemctl start codedeploy-agent
 
