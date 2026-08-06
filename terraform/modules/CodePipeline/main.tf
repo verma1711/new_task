@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "artifacts" {
-  bucket = "${var.project_name}-${var.environment}-pipeline-artifacts-${var.aws_account_id}"
+  bucket        = "${var.project_name}-${var.environment}-pipeline-artifacts-${var.aws_account_id}"
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "artifacts" {
@@ -17,12 +18,15 @@ resource "aws_iam_role" "pipeline_role" {
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
+
     Statement = [
       {
         Effect = "Allow"
+
         Principal = {
           Service = "codepipeline.amazonaws.com"
         }
+
         Action = "sts:AssumeRole"
       }
     ]
@@ -35,14 +39,17 @@ resource "aws_iam_role_policy" "pipeline_policy" {
 
   policy = jsonencode({
     Version = "2012-10-17"
+
     Statement = [
       {
         Effect = "Allow"
+
         Action = [
           "s3:GetObject",
           "s3:GetObjectVersion",
           "s3:PutObject",
           "s3:GetBucketVersioning",
+          "s3:ListBucket",
           "codebuild:StartBuild",
           "codebuild:BatchGetBuilds",
           "codedeploy:CreateDeployment",
@@ -53,6 +60,7 @@ resource "aws_iam_role_policy" "pipeline_policy" {
           "codedeploy:RegisterApplicationRevision",
           "codestar-connections:UseConnection"
         ]
+
         Resource = "*"
       }
     ]
@@ -65,12 +73,27 @@ resource "aws_codestarconnections_connection" "github" {
 }
 
 resource "aws_codepipeline" "main" {
-  name     = "${var.project_name}-${var.environment}-pipeline"
-  role_arn = aws_iam_role.pipeline_role.arn
+  name          = "${var.project_name}-${var.environment}-pipeline"
+  role_arn      = aws_iam_role.pipeline_role.arn
+  pipeline_type = "V2"
 
   artifact_store {
     location = aws_s3_bucket.artifacts.bucket
     type     = "S3"
+  }
+
+  trigger {
+    provider_type = "CodeStarSourceConnection"
+
+    git_configuration {
+      source_action_name = "GitHub"
+
+      push {
+        branches {
+          includes = [var.github_branch]
+        }
+      }
+    }
   }
 
   stage {
@@ -88,6 +111,7 @@ resource "aws_codepipeline" "main" {
         ConnectionArn    = aws_codestarconnections_connection.github.arn
         FullRepositoryId = "${var.github_owner}/${var.github_repo}"
         BranchName       = var.github_branch
+        DetectChanges    = "false"
       }
     }
   }
